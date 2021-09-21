@@ -1,0 +1,118 @@
+<html>
+<head><title>
+CSC401 Project 1
+</title>
+    
+    <script>
+    boxSpace = new Array (
+        'box1',
+        'box2',
+        'box4',
+        'box8',
+        'box16',
+        'box32',
+        'box64',
+        'box128',
+        'box256',
+        'box512',
+        'box1024'
+    )
+        
+    boxValues = new Array (
+    1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024
+    )
+        
+    function add() {
+        sum = 0
+        for (i=0; i < boxValues.length; i++) {
+            if (document.Project1[boxSpace[i]].checked) {
+                sum = sum + boxValues[i]
+            }
+
+        }
+        document.Project1.result.value=sum
+        if (sum == 1925) {
+                document.getElementById("i1").style.visibility = "visible";
+        }
+        
+        else {
+            document.getElementById("i1").style.visibility = "hidden";
+        }
+    }
+    </script>
+</head>
+
+<body>
+<form name="Project1">
+    <h2>CSC401 Project 1:</h2>
+    <h3><i>Binary number adder</i></h3>
+    <p><i>By Jeffrey Hudak</i></p>
+    
+    Add any number you want up to 2047, for example the year University of Miami was founded - 1925! The total will automatically be reflected in the sum box at the bottom of the screen.
+    
+    <p>
+    <b>Random thoughts I've had this week</b>
+    <ul>
+            <li> Why does light move in a 1D spectrum but we can turn it into a seamless circle?
+            <li> Why did I struggle so much in physics without friction but I'm killing my friction HW right now?
+            <li> I am so excited for mac-n-cheese on Saturday and waffles on Sunday!
+    </ul>
+    
+    <menu>
+    <table>
+        
+        <tr>
+            <td><input type=checkbox name="box1" onClick=add()></td>    <td>1</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box2" onClick=add()></td>    <td>2</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box4" onClick=add()></td>    <td>4</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box8" onClick=add()></td>    <td>8</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box16" onClick=add()></td>    <td>16</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box32" onClick=add()></td>    <td>32</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box64" onClick=add()></td>    <td>64</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box128" onClick=add()></td>    <td>128</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box256" onClick=add()></td>    <td>256</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box512" onClick=add()></td>    <td>512</td>
+        </tr>
+        <tr>
+            <td><input type=checkbox name="box1024" onClick=add()></td>    <td>1024</td>
+        </tr>
+        
+        
+        <tr><td colspan=2>|------------------|</td></tr> 
+        <tr><td><input type=text name="result" size=3 value=0> 
+        </td><td>Total</td></tr>
+
+
+    </table>
+    </menu>
+    
+        <picture>
+            <img src="https://logicwave.com/wp-content/uploads/2018/09/1600x5501.jpg" alt="Shalala Center" id = "i1" style="visibility:hidden;width:600px;height:205px;">
+    </picture>
+    
+        <p>
+        <font color=Coral>
+        <br>JS and HTML Assignment 1
+        <br>I don't think I have the legal power to make a copyright.
+        </font>
+    </form>
+    </body>
+</html>
