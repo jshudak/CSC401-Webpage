@@ -40,7 +40,6 @@ CSC401 Project 2
         
         function updateArray(toSwap) {
             var arrayNumChildren = document.getElementById('arrayNums').children;
-            console.log(arrayNumChildren)
             
             var tempText = arrayNumChildren[toSwap].innerHTML;
             arrayNumChildren[toSwap].innerHTML = arrayNumChildren[current_i].innerHTML
@@ -77,6 +76,7 @@ CSC401 Project 2
                         nElem.style.background = pColor;
                         forElem.style.background = pColor;
                         swapAElem.style.background = "White";
+                        
                         break;
                     }
                     
@@ -106,7 +106,6 @@ CSC401 Project 2
                     break;
             
                 case(2):
-                    console.log(rand);
                     updateArray(rand);
                     
                     swapAElem.style.background = bColor;
@@ -138,6 +137,7 @@ CSC401 Project 2
             
             for(var i=0; i<arrLen; i++) {
                 arrayNumChildren[i].innerHTML = (i+1);
+                arrayNumChildren[i].style.background = "White";
             }
             
             nElem.innerHTML = ('n = ' + arrLen);
@@ -149,6 +149,11 @@ CSC401 Project 2
             nElem.style.background = pColor;
             a_lenElem.style.background = pColor;
             nButton.innerHTML = showIText;
+            ARandElem.style.background = "White";
+            randElem.style.background = "White";
+            arrayNumChildren[rand].style.background = "White";
+            swapAElem.style.background = "White";
+            
             
         }
     </script>
