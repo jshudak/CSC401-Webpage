@@ -1,0 +1,370 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<title>Double Hash Table</title>
+<!--
+<script type="text/javascript" src="myjavascript.js"></script>
+<link href="course.css" rel="stylesheet" type="text/css">
+-->
+<style type="text/css"><!--
+   /* internal styles */
+body {
+   font-family: "Trebuchet MS", Skia, "Lucida Sans Unicode", sans-serif;
+   font-size: 16px;
+   margin: 2.5em auto 5em 5% ;
+   width: 90%; 
+}
+
+#header {
+   margin: 3em 0 ;
+   border: 3px #369;
+   border-style: solid solid ;
+   padding: 0em  2em 0 ;
+   text-align: center ;
+}
+
+#header .title {
+   font-size: 1.6em ;
+   margin-bottom: 0 ;
+}
+
+#footer {
+   margin: 3em 0 ;
+   /*border: 2px #036;*/
+   border: 3px #369;
+   border-style: solid solid ;
+   padding: .7em ;
+   
+}
+
+#footer img { 
+   border: none ;
+}
+
+.section {
+   font-size: 1.1em ;
+   font-weight: bold ;
+}
+
+a { 
+   color: #339 ; 
+   text-decoration: none ;
+}
+
+.prebox {
+   background: #ffc; 
+   overflow: scroll; 
+}
+
+.prebox span {
+   background: #fcc ;
+}
+
+
+.bucketnumber {
+   margin-top: 4.5em; 
+   text-align: center;
+   color: #555 ;
+}
+
+.buckettext {
+   float: left; 
+   text-align: center; 
+   width: 100%; 
+   margin-top: 1em ;
+   font-size: 1.5em ;
+}
+
+.bucketbox {
+   float: left; width: 4em; height: 4em;
+}
+
+#hashtablecontainer {
+   height: 8em ;
+}
+
+--></style>
+
+<script type="text/javascript">
+
+//
+// Double Hashing Table code
+// Jeffrey Hudak
+// 6 December 2021
+//
+// last updated: 6 December 2021
+//
+
+var TABLE_SIZE = 16;
+var cStep = 0;
+var cNum = 0;
+var cHash = 0;
+
+var bucketcolor = new Array( 
+	'#FFCC33',
+	'#FFCCCC',
+	'#f88',
+	'#f8c',
+	'#c8f',
+	'#88f',
+	'#99CCCC',
+	'#8f8',	
+	'#FFCC33',
+	'#FFCCCC',
+	'#f88',
+	'#f8c',
+	'#c8f',
+	'#88f',
+	'#99CCCC',
+	'#8f8',
+    '#ff8',
+	'#dca',
+	'#f88'
+	);
+
+function setElementValue(elementId, value) {
+	if ( document.getElementById(elementId).innerText!=undefined ) {
+		document.getElementById(elementId).innerText = value ;
+	} else {
+		document.getElementById(elementId).textContent = value ;
+	}
+}
+
+function setCellColor(cell, color) {
+	document.getElementById(cell).style.background = color ;
+}
+    
+function setBorderBlack(cell) {
+    if(document.getElementById('bb_'+cell).style.border == "thick solid rgb(0, 0, 0)") {
+        document.getElementById('bb_'+cell).style.border = "thick solid rgb(0,102,204)";
+    }
+    else if(document.getElementById('bb_'+cell).style.border == "thick solid rgb(0, 102, 204)") {
+        document.getElementById('bb_'+cell).style.border = "thick solid #CCFFFF";
+    }
+    else{
+	   document.getElementById('bb_'+cell).style.border = "thick solid #000" ;
+    }
+}
+    
+function setBorderBack(cell) {
+	document.getElementById('bb_'+cell).style.border = 'thick solid ' + bucketcolor[cell] ;
+}
+    
+function setBorderFound(cell) {
+	document.getElementById('bb_'+cell).style.border = "thick solid #CCCCCC" ;
+}
+
+function makeBucketHTMLString(i) {
+	return '<div class="bucketbox" id="bb_'+i+'" style="background: '+bucketcolor[i]+'; border: thick solid '+bucketcolor[i]+';">'
+		+'<div id="bucket_'+i+'" class="buckettext"><'
+		+ '/div><div class="bucketnumber">'+i+'<'+'/div><'+'/div>' ;
+}
+
+
+function initElement() {
+	var el = document.getElementById("hashtablecontainer") ;
+	var i ;
+	for (i=0;i<TABLE_SIZE;i++ ) {
+		el.innerHTML = el.innerHTML + makeBucketHTMLString(i) ;
+	}
+}
+ 
+function setElementValue(elementId, value) {
+	if ( document.getElementById(elementId).innerText!=undefined ) {
+		document.getElementById(elementId).innerText = value ;
+	} else {
+		document.getElementById(elementId).textContent = value ;
+	}
+}
+
+function getElementValue(elementId) {
+	if ( document.getElementById(elementId).innerText!=undefined ) {
+		return document.getElementById(elementId).innerText ;
+	} else {
+		return document.getElementById(elementId).textContent ;
+	}
+}
+
+function getFromBucket(b) {
+// check for IE or Gecko. This is Gecko only:
+	return getElementValue('bucket_'+b) ;
+}
+
+function putToBucket(b,t) {
+// check for IE or Gecko. This is Gecko only:
+	setElementValue('bucket_'+b,t) ;
+	document.getElementById('bucket_'+b).style.color="#FFFFFF" ;
+}
+
+function makeBucketsBlack() {
+	var i ;
+	for ( i=0;i<TABLE_SIZE;i++ )
+		document.getElementById('bucket_'+i).style.color="#000" ;
+}
+
+function colorBucketTouched(i) {
+	document.getElementById('bucket_'+i).style.color="#a00" ;
+}
+
+function clearInputValues() {
+	var i ;
+	for ( i=0;i<TABLE_SIZE;i++ ) {
+		putToBucket(i,"") ;
+        setBorderBack(i);
+	}
+    document.getElementById("Button").innerText = "Enter";
+    document.getElementById("PrintText").innerText = "Value";
+    document.getElementById("PrintText").style.background = '#cfc';
+    cNum = 0;
+    cHash = 0;
+    cStep = 0;
+}
+
+function hashTableInsert(j) {
+    if (cStep == 0) {
+        cHash = j%TABLE_SIZE ;
+        
+        if(getFromBucket(cHash) == "") {
+            setBorderFound(cHash);
+            putToBucket(cHash,j) ; 
+            document.getElementById("PrintText").innerText = "Spot Found!";
+            document.getElementById("PrintText").style.background = '#8f8';
+            cNum = 0;
+            cHash = 0;
+        }
+        
+        else  {
+            cStep = cStep + 1;
+            colorBucketTouched(cHash);
+            setBorderBlack(cHash);
+            document.getElementById("PrintText").innerText = "Hash " + cHash + " full";
+            cHash = (cNum%TABLE_SIZE + cStep * 2 * (cNum%4 + 1))%TABLE_SIZE ;
+            document.getElementById("PrintText").style.background = '#f8c';
+            document.getElementById("Button").innerText = "Next Hash";
+	   }
+    }
+    
+    else if(getFromBucket(cHash) == "") {
+        setBorderFound(cHash);
+        putToBucket(cHash,j) ; 
+        cNum = 0;
+        cStep = 0;
+        document.getElementById("PrintText").innerText = "Spot Found!";
+        document.getElementById("PrintText").style.background = '#8f8';
+        document.getElementById("Button").innerText = "Enter";
+        cHash = 0;
+    }
+        
+   else if (getFromBucket(cHash) != "" && cStep < TABLE_SIZE) {
+        cStep = cStep + 1;
+        colorBucketTouched(cHash);
+        setBorderBlack(cHash);
+        document.getElementById("PrintText").innerText = "Hash " + cHash + " full";
+        cHash = (cNum%TABLE_SIZE + cStep * 2 * (cNum%4 + 1))%TABLE_SIZE ;
+        document.getElementById("PrintText").style.background = '#f8c';
+        document.getElementById("Button").innerText = "Next Hash";
+    }
+    
+    else if(getFromBucket(cHash) != "" && cStep == TABLE_SIZE) {
+        document.getElementById("PrintText").innerText = "Limit Reached";
+        document.getElementById("PrintText").style.background = '#f88';
+        document.getElementById("Button").innerText = "Enter";
+        cStep = 0;
+        cNum = 0;
+        cHash = 0;
+    }
+
+}
+
+
+function getInputValue() {
+    var s = document.getElementById('hashin').value ;
+	var j = parseInt(s) ;
+    if(cStep == 0) {
+        makeBucketsBlack() ;
+        for ( i=0;i<TABLE_SIZE;i++ ) {
+            var i ;
+            setBorderBack(i);
+	   }
+	   if ( !isNaN(j) ) {
+        cNum = j
+        hashTableInsert(j) ;
+        }
+    }
+    
+    else {
+            hashTableInsert(cNum)
+    }
+    
+	document.getElementById('hashin').value="" ;
+}
+</script>
+
+</head>
+<body onload="initElement();">
+ 
+<div id="header">
+<h1>
+Hashing: Double Hashing
+</h1>
+</div>
+
+
+<h2>
+Hashtable
+</h2>
+
+<div id="hashtablecontainer">
+<!-- left margin -->
+<div style="float: left; width: 2em;">&nbsp;</div>
+<!-- javascript will create buckets here -->
+<!--    background color for the buckets is described by entries in array bucketcolor -->
+
+</div>
+
+
+<h2>Input</h2>
+
+<!-- left margin -->
+<div style="float: left; width: 2em;">&nbsp;</div>
+
+<table>
+
+<tr>
+<th style="background: #cfc; width: 10em;" id="PrintText">Value
+<td><input type="text" id="hashin">
+<tr>
+<th style="border: solid red 2px; background: #eef;" id="Button"
+onclick="getInputValue()">&nbsp;Enter&nbsp;
+<th style="border: solid red 2px; background: #eef;"
+onclick="clearInputValues()">&nbsp;Clear&nbsp;
+</table>
+
+<h2>
+Explanation
+</h2>
+
+<p>
+This website demonstrates the idea of double (or more) hashing. What you see above is a table that can hold 16 elements.
+The table can be filled in by inputing a value into the text box and hitting "Enter" to which the website will give it a hash value. The hash value is determined by the following function:</p>
+<p>current_Hash = (key % TABLE_SIZE + (i * 2 * (key % 4 + 1))) % TABLE_SIZE</p>
+<p>
+You can see where the website is currently trying to input the value by the next colored box. It will cycle through black, dark blue, and light blue as it tries various positions in the table.
+If the hash function gets stuck in a loop or tries for more than 16 times, it will simply say a limit was reached and the user can try a different value.
+</p>
+
+<h2>References</h2>
+<ul>
+<li>
+<a href="https://www.cs.miami.edu/home/burt/learning/Csc517.101/workbook/hashing_linear.html">Dr.Rosenburg's Example</a>
+<li><a href="http://html-color-codes.com/">216 web colors</a> This was actually extremely helpful!
+</ul>
+
+<div id="footer">
+Created: September, 2007 by Dr.Rosenburg. 
+<br>
+Updated: 12 December 2021 by Jeffrey Hudak.
+</div>
+</body>
+</html>
+
